@@ -15,7 +15,7 @@ int main(const int argc, char** argv)
         original_array[i] = rand() % 1000000;
     }
 
-    // serial_main(argc, argv, original_array);
+    serial_main(argc, argv, original_array);
     parallel_main(argc, argv, original_array);
 
     free(original_array);
