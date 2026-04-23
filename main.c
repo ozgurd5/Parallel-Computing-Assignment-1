@@ -1,23 +1,40 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <mpi.h>
 #include "common.h"
 #include "serial.h"
 #include "parallel.h"
 
-int main(const int argc, char** argv)
+int main(int argc, char** argv)
 {
-    srand(time(NULL));
+    MPI_Init(&argc, &argv);
 
-    int* original_array = (int*)malloc(N * sizeof(int));
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    for (int i = 0; i < N; i++)
+    int* original_array = NULL;
+
+    if (rank == 0)
     {
-        original_array[i] = rand() % 1000000;
+        srand(time(NULL));
+        original_array = (int*)malloc(N * sizeof(int));
+
+        for (int i = 0; i < N; i++)
+        {
+            original_array[i] = rand() % 1000000;
+        }
+
+        serial_main(argc, argv, original_array);
     }
 
-    serial_main(argc, argv, original_array);
     parallel_main(argc, argv, original_array);
 
-    free(original_array);
+    if (rank == 0)
+    {
+        free(original_array);
+    }
+
+    MPI_Finalize();
     return 0;
 }

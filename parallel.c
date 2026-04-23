@@ -144,10 +144,6 @@ void run_parallel_sort_tree(const char* name,
 
 int parallel_main(const int argc, char** argv, const int* original_array)
 {
-    printf("Running parallel algorithms\n");
-
-    MPI_Init(&argc, &argv);
-
     int rank;
     int size;
 
@@ -161,7 +157,6 @@ int parallel_main(const int argc, char** argv, const int* original_array)
             printf("Error: N (%d) must be divisible by processor size (%d).\n", N, size);
         }
 
-        MPI_Finalize();
         return 1;
     }
 
@@ -194,6 +189,5 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     free(local_array);
 
-    MPI_Finalize();
     return 0;
 }

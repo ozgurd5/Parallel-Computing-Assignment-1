@@ -7,7 +7,6 @@ int serial_main(const int argc, char** argv, const int* original_array)
     double start;
     double end;
 
-    printf("Running serial algorithms\n");
     printf("Array size (N): %d\n", N);
 
     printf("--- Quick Sort ---\n");
