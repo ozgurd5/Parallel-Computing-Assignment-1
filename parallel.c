@@ -3,6 +3,52 @@
 #include <mpi.h>
 #include "common.h"
 
+typedef int* (*sort_func)(const int*, int);
+
+static void run_parallel_sort(const char* name,
+                              const sort_func sort_fn,
+                              const int* original_array,
+                              int* local_array,
+                              int* gathered_array,
+                              const int local_n,
+                              const int size,
+                              const int rank)
+{
+    MPI_Barrier(MPI_COMM_WORLD);
+    const double start_time = MPI_Wtime();
+
+    MPI_Scatter(original_array, local_n, MPI_INT, local_array,
+        local_n, MPI_INT, 0, MPI_COMM_WORLD);
+
+    int* local_sorted = sort_fn(local_array, local_n);
+
+    MPI_Gather(local_sorted, local_n, MPI_INT, gathered_array,
+        local_n, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0)
+    {
+        for (int i = 1; i < size; i++)
+        {
+            merge(gathered_array, 0, i * local_n - 1, (i + 1) * local_n - 1);
+        }
+    }
+
+    const double end_time = MPI_Wtime();
+    const double local_elapsed = end_time - start_time;
+    double max_elapsed;
+    MPI_Reduce(&local_elapsed, &max_elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (rank == 0)
+    {
+        printf("--- Parallel %s ---\n", name);
+        printf("Time: %.6f seconds\n", max_elapsed);
+        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
+        fflush(stdout);
+    }
+
+    free(local_sorted);
+}
+
 int parallel_main(const int argc, char** argv, const int* original_array)
 {
     MPI_Init(&argc, &argv);
@@ -39,171 +85,20 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     int* local_array = (int*)malloc(local_n * sizeof(int));
 
-    double start_time;
-    double end_time;
-    double local_elapsed;
-    double max_elapsed;
+    run_parallel_sort("Quick Sort", quick_sort, original_array,
+        local_array, gathered_array, local_n, size, rank);
 
-    // ---------------- 1. QUICK SORT (PARALLEL) ----------------
-    start_time = MPI_Wtime();
-    MPI_Scatter(original_array, local_n, MPI_INT, local_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
+    run_parallel_sort("Merge Sort", merge_sort, original_array,
+        local_array, gathered_array, local_n, size, rank);
 
-    int* local_sorted_quick = quick_sort(local_array, local_n);
+    run_parallel_sort("Bitonic Sort", bitonic_sort, original_array,
+        local_array, gathered_array, local_n, size, rank);
 
-    MPI_Gather(local_sorted_quick, local_n, MPI_INT, gathered_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
+    run_parallel_sort("Selection Sort", selection_sort, original_array,
+        local_array, gathered_array, local_n, size, rank);
 
-    if (rank == 0)
-    {
-        for (int i = 1; i < size; i++)
-        {
-            merge(gathered_array, 0, i * local_n - 1, (i + 1) * local_n - 1);
-        }
-    }
-
-    end_time = MPI_Wtime();
-    local_elapsed = end_time - start_time;
-    MPI_Reduce(&local_elapsed, &max_elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        printf("--- Parallel Quick Sort ---\n");
-        printf("Time: %.6f seconds\n", max_elapsed);
-        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
-        fflush(stdout);
-    }
-    free(local_sorted_quick);
-
-    // ---------------- 2. MERGE SORT (PARALLEL) ----------------
-    MPI_Barrier(MPI_COMM_WORLD);
-    start_time = MPI_Wtime();
-
-    MPI_Scatter(original_array, local_n, MPI_INT, local_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    int* local_sorted_merge = merge_sort(local_array, local_n);
-
-    MPI_Gather(local_sorted_merge, local_n, MPI_INT, gathered_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        for (int i = 1; i < size; i++)
-        {
-            merge(gathered_array, 0, i * local_n - 1, (i + 1) * local_n - 1);
-        }
-    }
-
-    end_time = MPI_Wtime();
-    local_elapsed = end_time - start_time;
-    MPI_Reduce(&local_elapsed, &max_elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        printf("--- Parallel Merge Sort ---\n");
-        printf("Time: %.6f seconds\n", max_elapsed);
-        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
-        fflush(stdout);
-    }
-    free(local_sorted_merge);
-
-    // ---------------- 3. BITONIC SORT (PARALLEL) ----------------
-    MPI_Barrier(MPI_COMM_WORLD);
-    start_time = MPI_Wtime();
-
-    MPI_Scatter(original_array, local_n, MPI_INT, local_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    int* local_sorted_bitonic = bitonic_sort(local_array, local_n);
-
-    MPI_Gather(local_sorted_bitonic, local_n, MPI_INT, gathered_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        for (int i = 1; i < size; i++)
-        {
-            merge(gathered_array, 0, i * local_n - 1, (i + 1) * local_n - 1);
-        }
-    }
-
-    end_time = MPI_Wtime();
-    local_elapsed = end_time - start_time;
-    MPI_Reduce(&local_elapsed, &max_elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        printf("--- Parallel Bitonic Sort ---\n");
-        printf("Time: %.6f seconds\n", max_elapsed);
-        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
-        fflush(stdout);
-    }
-    free(local_sorted_bitonic);
-
-    // ---------------- 4. SELECTION SORT (PARALLEL) ----------------
-    MPI_Barrier(MPI_COMM_WORLD);
-    start_time = MPI_Wtime();
-
-    MPI_Scatter(original_array, local_n, MPI_INT, local_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    int* local_sorted_selection = selection_sort(local_array, local_n);
-
-    MPI_Gather(local_sorted_selection, local_n, MPI_INT, gathered_array,
-        local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        for (int i = 1; i < size; i++)
-        {
-            merge(gathered_array, 0, i * local_n - 1, (i + 1) * local_n - 1);
-        }
-    }
-
-    end_time = MPI_Wtime();
-    local_elapsed = end_time - start_time;
-    MPI_Reduce(&local_elapsed, &max_elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        printf("--- Parallel Selection Sort ---\n");
-        printf("Time: %.6f seconds\n", max_elapsed);
-        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
-        fflush(stdout);
-    }
-    free(local_sorted_selection);
-
-    // ---------------- 5. BUBBLE SORT (PARALLEL) ----------------
-    MPI_Barrier(MPI_COMM_WORLD);
-    start_time = MPI_Wtime();
-
-    MPI_Scatter(original_array, local_n, MPI_INT, local_array, local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    int* local_sorted_bubble = bubble_sort(local_array, local_n);
-
-    MPI_Gather(local_sorted_bubble, local_n, MPI_INT, gathered_array, local_n, MPI_INT, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        for (int i = 1; i < size; i++)
-        {
-            merge(gathered_array, 0, i * local_n - 1, (i + 1) * local_n - 1);
-        }
-    }
-
-    end_time = MPI_Wtime();
-    local_elapsed = end_time - start_time;
-    MPI_Reduce(&local_elapsed, &max_elapsed, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        printf("--- Parallel Bubble Sort ---\n");
-        printf("Time: %.6f seconds\n", max_elapsed);
-        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
-        fflush(stdout);
-    }
-    free(local_sorted_bubble);
+    run_parallel_sort("Bubble Sort", bubble_sort, original_array,
+        local_array, gathered_array, local_n, size, rank);
 
     free(local_array);
     if (rank == 0)
