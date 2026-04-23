@@ -1,6 +1,6 @@
 ﻿#ifndef PARALLEL_COMPUTING_ASSIGNMENT_SERIAL_H
 #define PARALLEL_COMPUTING_ASSIGNMENT_SERIAL_H
 
-int serial_main();
+int serial_main(int argc, char** argv);
 
 #endif //PARALLEL_COMPUTING_ASSIGNMENT_SERIAL_H
