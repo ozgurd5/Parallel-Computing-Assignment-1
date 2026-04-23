@@ -11,7 +11,7 @@ double get_time()
 
     const double seconds = tv.tv_sec;
     const double microseconds = tv.tv_usec;
-    const double time = seconds + microseconds / 1000000.0f;
+    const double time = seconds + microseconds / 1000000.0;
     return time;
 }
 
@@ -25,6 +25,19 @@ int* copy_array(const int* source, const int size)
     }
 
     return destination;
+}
+
+int is_sorted(const int* arr, const int n)
+{
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i] > arr[i + 1])
+        {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 int* bubble_sort(const int* original, const int n)

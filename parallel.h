@@ -1,6 +1,6 @@
 ﻿#ifndef PARALLEL_COMPUTING_ASSIGNMENT_PARALLEL_H
 #define PARALLEL_COMPUTING_ASSIGNMENT_PARALLEL_H
 
-int parallel_main(int argc, char** argv);
+int parallel_main(int argc, char** argv, const int* original_array);
 
 #endif //PARALLEL_COMPUTING_ASSIGNMENT_PARALLEL_H

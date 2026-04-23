@@ -1,10 +1,9 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <mpi.h>
 #include "common.h"
 
-int parallel_main(const int argc, char** argv)
+int parallel_main(const int argc, char** argv, const int* original_array)
 {
     MPI_Init(&argc, &argv);
 
@@ -21,11 +20,11 @@ int parallel_main(const int argc, char** argv)
             printf("Error: N (%d) must be divisible by processor size (%d).\n", N, size);
         }
 
+        MPI_Finalize();
         return 1;
     }
 
     const int local_n = N / size;
-    int* original_array = NULL;
     int* gathered_array = NULL;
 
     if (rank == 0)
@@ -35,14 +34,7 @@ int parallel_main(const int argc, char** argv)
         printf("Array size (N): %d\n\n", N);
         fflush(stdout);
 
-        original_array = (int*)malloc(N * sizeof(int));
         gathered_array = (int*)malloc(N * sizeof(int));
-
-        srand(time(NULL));
-        for (int i = 0; i < N; i++)
-        {
-            original_array[i] = rand() % 1000000;
-        }
     }
 
     int* local_array = (int*)malloc(local_n * sizeof(int));
@@ -76,7 +68,8 @@ int parallel_main(const int argc, char** argv)
 
     if (rank == 0)
     {
-        printf("Parallel Quick Sort Time   : %.6f seconds\n", max_elapsed);
+        printf("Parallel Quick Sort Time: %.6f seconds\n", max_elapsed);
+        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
     free(local_sorted_quick);
@@ -107,7 +100,8 @@ int parallel_main(const int argc, char** argv)
 
     if (rank == 0)
     {
-        printf("Parallel Merge Sort Time   : %.6f seconds\n", max_elapsed);
+        printf("Parallel Merge Sort Time: %.6f seconds\n", max_elapsed);
+        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
     free(local_sorted_merge);
@@ -138,7 +132,8 @@ int parallel_main(const int argc, char** argv)
 
     if (rank == 0)
     {
-        printf("Parallel Bitonic Sort Time : %.6f seconds\n", max_elapsed);
+        printf("Parallel Bitonic Sort Time: %.6f seconds\n", max_elapsed);
+        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
     free(local_sorted_bitonic);
@@ -170,6 +165,7 @@ int parallel_main(const int argc, char** argv)
     if (rank == 0)
     {
         printf("Parallel Selection Sort Time: %.6f seconds\n", max_elapsed);
+        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
     free(local_sorted_selection);
@@ -198,7 +194,8 @@ int parallel_main(const int argc, char** argv)
 
     if (rank == 0)
     {
-        printf("Parallel Bubble Sort Time  : %.6f seconds\n", max_elapsed);
+        printf("Parallel Bubble Sort Time: %.6f seconds\n", max_elapsed);
+        printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
     free(local_sorted_bubble);
@@ -206,7 +203,6 @@ int parallel_main(const int argc, char** argv)
     free(local_array);
     if (rank == 0)
     {
-        free(original_array);
         free(gathered_array);
     }
 

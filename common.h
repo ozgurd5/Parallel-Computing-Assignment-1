@@ -5,6 +5,7 @@
 
 double get_time();
 int* copy_array(const int* source, const int size);
+int is_sorted(const int* arr, const int n);
 
 int* bubble_sort(const int* original, const int n);
 int* selection_sort(const int* original, const int n);
