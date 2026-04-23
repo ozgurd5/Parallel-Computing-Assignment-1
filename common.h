@@ -1,7 +1,7 @@
 ﻿#ifndef PARALLEL_COMPUTING_ASSIGNMENT_COMMON_H
 #define PARALLEL_COMPUTING_ASSIGNMENT_COMMON_H
 
-#define N 10000
+#define N 1000000
 
 double get_time();
 int* copy_array(const int* source, const int size);

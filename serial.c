@@ -15,6 +15,7 @@ int serial_main(const int argc, char** argv, const int* original_array)
     end = get_time();
     printf("Time: %.6f seconds\n", end - start);
     printf("Sorted: %s\n\n", is_sorted(quick_sorted, N) ? "YES" : "NO");
+    fflush(stdout);
     free(quick_sorted);
 
     printf("--- Merge Sort ---\n");
@@ -23,6 +24,7 @@ int serial_main(const int argc, char** argv, const int* original_array)
     end = get_time();
     printf("Time: %.6f seconds\n", end - start);
     printf("Sorted: %s\n\n", is_sorted(merge_sorted, N) ? "YES" : "NO");
+    fflush(stdout);
     free(merge_sorted);
 
     printf("--- Bitonic Sort ---\n");
@@ -31,6 +33,7 @@ int serial_main(const int argc, char** argv, const int* original_array)
     end = get_time();
     printf("Time: %.6f seconds\n", end - start);
     printf("Sorted: %s\n\n", is_sorted(bitonic_sorted, N) ? "YES" : "NO");
+    fflush(stdout);
     free(bitonic_sorted);
 
     printf("--- Selection Sort ---\n");
@@ -39,6 +42,7 @@ int serial_main(const int argc, char** argv, const int* original_array)
     end = get_time();
     printf("Time: %.6f seconds\n", end - start);
     printf("Sorted: %s\n\n", is_sorted(selection_sorted, N) ? "YES" : "NO");
+    fflush(stdout);
     free(selection_sorted);
 
     printf("--- Bubble Sort ---\n");
@@ -47,6 +51,7 @@ int serial_main(const int argc, char** argv, const int* original_array)
     end = get_time();
     printf("Time: %.6f seconds\n", end - start);
     printf("Sorted: %s\n\n", is_sorted(bubble_sorted, N) ? "YES" : "NO");
+    fflush(stdout);
     free(bubble_sorted);
 
     return 0;
