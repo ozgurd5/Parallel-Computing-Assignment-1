@@ -26,44 +26,6 @@
 
 ---
 
-## Temel Kavramlar
-
-Raporun geri kalanını daha iyi anlamak için, sık kullanılan birkaç temel kavramı burada açıklıyoruz.
-
-### Teorik Karmaşıklık ve Big-O Notasyonu
-
-Bir algoritmanın **karmaşıklığı**, algoritmanın giriş boyutu büyüdükçe ne kadar iş yaptığını (ne kadar süre alacağını veya bellek tüketeceğini) tahmin eden bir ölçüdür. Bu ölçü için **Big-O notasyonu** kullanılır. Big-O, algoritmanın "büyüme hızı"nı belirtir, tam süre vermez; ama N büyüdükçe sürenin nasıl artacağını gösterir.
-
-Bu raporda karşılaşacağınız karmaşıklık seviyeleri:
-
-| Notasyon | İsim | Örnek davranış (n 10 kat büyürse süre ne olur?) |
-|---|---|---|
-| O(1) | Sabit | Süre değişmez |
-| O(log n) | Logaritmik | Süre çok az artar (örn. 2 birim) |
-| O(n) | Doğrusal | Süre 10 kat artar |
-| O(n log n) | "Linearitmik" | Süre yaklaşık 12-14 kat artar |
-| O(n log² n) | — | Süre yaklaşık 13-15 kat artar |
-| O(n²) | Kuadratik | Süre 100 kat artar |
-
-Pratik olarak: sıralama algoritmaları için O(n log n) "iyi", O(n²) "kötü" sayılır. İyi algoritmalar büyük `n` için oldukça makul sürelerde çalışırken kötü algoritmalar büyük `n`'de kullanılmaz hâle gelir. Raporda her algoritma için teorik karmaşıklığını verip gerçek ölçümlerle karşılaştırıyoruz.
-
-> **Not:** Big-O sabit çarpanları gizler. İki algoritma da O(n) olsa bile biri diğerinden 5 kat daha hızlı olabilir. Yani karmaşıklık sadece "büyüme hızı"nı söyler, tek başına hangi algoritmanın pratikte hızlı olduğunu garanti etmez.
-
-### MPI ve Rank Kavramı
-
-**MPI (Message Passing Interface)** paralel programlama için bir standarttır. `mpiexec -n 8 program.exe` komutu, programımızı aynı anda 8 ayrı süreç (process) olarak başlatır. Her süreç kendi belleğine sahiptir, birbirinin değişkenlerini göremez; aralarında iletişim için mesaj gönderip alırlar.
-
-Her sürece bir **rank** numarası verilir: 0, 1, 2, …, p−1 (burada p toplam süreç sayısı). Rank 0 genelde "koordinatör" rolündedir — veri üretir, dağıtır, sonucu toplar. Diğer ranklar "işçi" rolündedir.
-
-Kullandığımız başlıca MPI fonksiyonları:
-
-- **`MPI_Scatter`**: Rank 0'daki bir diziyi eşit parçalara bölüp tüm ranklara dağıtır.
-- **`MPI_Gather`**: Tüm ranklardaki küçük dizileri rank 0'da tek dizide toplar.
-- **`MPI_Send` / `MPI_Recv`**: Belirli iki rank arasında doğrudan mesaj gönderir/alır.
-- **`MPI_Reduce`**: Tüm ranklardan bir değer alıp (örneğin maksimumunu) rank 0'da toplar.
-- **`MPI_Barrier`**: Tüm ranklar bu noktaya ulaşana kadar bekler; senkronizasyon için.
-- **`MPI_Wtime`**: Yüksek çözünürlüklü zaman ölçümü sağlar (paralel süre ölçümü için kullanılır).
-
 ### Speedup ve Verimlilik
 
 Paralel bir algoritmanın ne kadar işe yaradığını iki sayıyla ölçüyoruz:
@@ -135,8 +97,6 @@ Komşu elemanları ikili karşılaştırıp ters sıradalarsa yer değiştirir. 
 | 10.000 | 0.000680 | 0.001796 | 0.003498 | 0.051797 | 0.096148 |
 | 100.000 | 0.008325 | 0.023166 | 0.044366 | 5.101403 | 16.212982 |
 | 1.000.000 | 0.087513 | 0.198633 | 0.410216 | 508.595415 | 1748.750755 |
-
-> **Not (Bubble Sort, N = 1.000.000):** Bubble sort 1 milyon elemanlı dizide yaklaşık 29 dakika (1748.75 saniye) sürdü. 100.000 → 1 milyon geçişinde süre 107.9 kat arttı, bu teorik O(n²) beklentisi olan 100 kata oldukça yakındır. Aradaki küçük sapma (100× yerine 108×), çok büyük dizilerde cache'in RAM'i paylaşması ve Bubble sort'un komşu eleman erişiminin cache satırlarını sıkça zorlamasıyla açıklanabilir.
 
 ![Seri çalışma süreleri (log-log)](images/seri_sureleri.png)
 
