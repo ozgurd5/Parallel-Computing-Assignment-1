@@ -68,7 +68,8 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     if (rank == 0)
     {
-        printf("Parallel Quick Sort Time: %.6f seconds\n", max_elapsed);
+        printf("--- Parallel Quick Sort ---\n");
+        printf("Time: %.6f seconds\n", max_elapsed);
         printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
@@ -100,7 +101,8 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     if (rank == 0)
     {
-        printf("Parallel Merge Sort Time: %.6f seconds\n", max_elapsed);
+        printf("--- Parallel Merge Sort ---\n");
+        printf("Time: %.6f seconds\n", max_elapsed);
         printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
@@ -132,7 +134,8 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     if (rank == 0)
     {
-        printf("Parallel Bitonic Sort Time: %.6f seconds\n", max_elapsed);
+        printf("--- Parallel Bitonic Sort ---\n");
+        printf("Time: %.6f seconds\n", max_elapsed);
         printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
@@ -164,7 +167,8 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     if (rank == 0)
     {
-        printf("Parallel Selection Sort Time: %.6f seconds\n", max_elapsed);
+        printf("--- Parallel Selection Sort ---\n");
+        printf("Time: %.6f seconds\n", max_elapsed);
         printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
@@ -194,7 +198,8 @@ int parallel_main(const int argc, char** argv, const int* original_array)
 
     if (rank == 0)
     {
-        printf("Parallel Bubble Sort Time: %.6f seconds\n", max_elapsed);
+        printf("--- Parallel Bubble Sort ---\n");
+        printf("Time: %.6f seconds\n", max_elapsed);
         printf("Sorted: %s\n\n", is_sorted(gathered_array, N) ? "YES" : "NO");
         fflush(stdout);
     }
