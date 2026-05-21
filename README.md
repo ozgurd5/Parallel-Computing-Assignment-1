@@ -57,7 +57,7 @@ cmake -B build
 cmake --build build
 
 # Run with p processors (p must divide N defined in common.h)
-mpiexec -n 8 build/Parallel_Computing_Assignment.exe
+mpiexec -n 8 build/Parallel_Computing_Assignment_1.exe
 
 # Generate the performance graphs
 pip install matplotlib numpy

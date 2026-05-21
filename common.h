@@ -1,5 +1,5 @@
-﻿#ifndef PARALLEL_COMPUTING_ASSIGNMENT_COMMON_H
-#define PARALLEL_COMPUTING_ASSIGNMENT_COMMON_H
+﻿#ifndef PARALLEL_COMPUTING_ASSIGNMENT_1_COMMON_H
+#define PARALLEL_COMPUTING_ASSIGNMENT_1_COMMON_H
 
 #define N 1000000
 
@@ -21,4 +21,4 @@ void bitonic_merge(int* arr, const int low, const int cnt, const int dir);
 void bitonic_sort_recursive(int* arr, const int low, const int cnt, const int dir);
 int* bitonic_sort(const int* original, const int n);
 
-#endif //PARALLEL_COMPUTING_ASSIGNMENT_COMMON_H
+#endif //PARALLEL_COMPUTING_ASSIGNMENT_1_COMMON_H
